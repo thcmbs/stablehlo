@@ -2016,6 +2016,22 @@ func.func @dynamic_gather(%arg0: tensor<?x4xf32>, %arg1: tensor<1xi64>) -> tenso
 
 // -----
 
+// CHECK-LABEL: func @dynamic_gather_reify_return_type_shapes
+func.func @dynamic_gather_reify_return_type_shapes(%arg0: tensor<?x4xf32>, %arg1: tensor<1xi64>) -> tensor<2xindex> {
+  %0 = stablehlo.constant dense<[1, 2]> : tensor<2xi32>
+  %1 = "stablehlo.dynamic_gather"(%arg0, %arg1, %0) {
+    dimension_numbers = #stablehlo.gather<
+      offset_dims = [0, 1],
+      start_index_map = [1]
+    >,
+    indices_are_sorted = true
+  } : (tensor<?x4xf32>, tensor<1xi64>, tensor<2xi32>) -> tensor<?x?xf32>
+  %2 = "hlo_test_infer.reify_return_type_shapes"(%1) : (tensor<?x?xf32>) -> tensor<2xindex>
+  func.return %2 : tensor<2xindex>
+}
+
+// -----
+
 // CHECK-LABEL: @select
 func.func @select(%pred : tensor<i1>,
     %a : tensor<?x2x3x?xf32, #stablehlo.bounds<5, ?, ?, 7>>,

@@ -1725,6 +1725,14 @@ func.func @concatenate(%arg0: tensor<?x?xi32>, %arg1: tensor<?x?xi32>, %arg2: te
   func.return %1 : tensor<2xindex>
 }
 
+// CHECK-LABEL: func @dynamic_reshape_reify_return_type_shapes
+func.func @dynamic_reshape_reify_return_type_shapes(%arg0: tensor<?x?xf32>) -> tensor<2xindex> {
+  %shape = stablehlo.constant dense<[2, 4]> : tensor<2xi64>
+  %0 = stablehlo.dynamic_reshape %arg0, %shape : (tensor<?x?xf32>, tensor<2xi64>) -> tensor<2x4xf32>
+  %1 = "hlo_test_infer.reify_return_type_shapes"(%0) : (tensor<2x4xf32>) -> tensor<2xindex>
+  func.return %1 : tensor<2xindex>
+}
+
 // -----
 
 // CHECK-LABEL: func @reduce_with_bounds

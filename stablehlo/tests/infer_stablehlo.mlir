@@ -2056,3 +2056,15 @@ func.func @reverse(%a : tensor<?x?x?x?xf32>) -> tensor<4xindex> {
   %1 = "hlo_test_infer.reify_return_type_shapes"(%0) : (tensor<?x?x?x?xf32>) -> tensor<4xindex>
   func.return %1 : tensor<4xindex>
 }
+
+// -----
+
+// CHECK-LABEL: @reverse_infer_return_type
+func.func @reverse_infer_return_type(%a : tensor<4x2xi64>) -> tensor<4x2xi64> {
+  %0 = "stablehlo.reverse"(%a) {
+    dimensions = array<i64: 1, 0>, someattr
+  } : (tensor<4x2xi64>) -> tensor<4x2xi64>
+  // CHECK: types0 = tensor<4x2xi64>
+  %1 = "hlo_test_infer.get_return_types"(%0) : (tensor<4x2xi64>) -> tensor<4x2xi64>
+  func.return %1 : tensor<4x2xi64>
+}

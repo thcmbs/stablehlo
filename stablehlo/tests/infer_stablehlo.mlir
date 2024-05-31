@@ -2068,3 +2068,13 @@ func.func @reverse_infer_return_type(%a : tensor<4x2xi64>) -> tensor<4x2xi64> {
   %1 = "hlo_test_infer.get_return_types"(%0) : (tensor<4x2xi64>) -> tensor<4x2xi64>
   func.return %1 : tensor<4x2xi64>
 }
+
+// -----
+
+// CHECK-LABEL: func.func @add_infer_return_type
+func.func @add_infer_return_type(%arg0: tensor<2xf32>, %arg1: tensor<2xf32>) -> tensor<2xindex> {
+  %0 = stablehlo.add %arg0, %arg1 : tensor<2xf32>
+  // CHECK: types0 = tensor<2xf32>
+  %1 = "hlo_test_infer.get_return_types"(%0) : (tensor<2xf32>) -> tensor<2xindex>
+  func.return %1 : tensor<2xindex>
+}
